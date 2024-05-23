@@ -1,21 +1,16 @@
-import { useState } from 'react'
 import NewPost from './NewPost'
 import Post from './Post'
 import Modal from './Modal'
 import styles from './PostList.module.css'
+import { useState } from 'react'
 
 function PostsList({isPosting, handleHideModal}) {
-  const [enteredBody, setEnteredBody] = useState('')
-  const [enteredAuthor , setEnteredAuthor] = useState('')
 
+    const [posts, setPosts] = useState([])
 
-  function handleBodyChange(e) {
-      setEnteredBody(e.target.value)
-  }
-
-  function handleAuthorChange(e) {
-      setEnteredAuthor(e.target.value)
-  }
+    function handleAddPost(postData) {
+      setPosts((existingPosts) => [postData, ...existingPosts])
+    }
 
 
   return (
@@ -23,13 +18,22 @@ function PostsList({isPosting, handleHideModal}) {
     {
       isPosting && 
       <Modal onClose = {handleHideModal}>
-        <NewPost onBodyChange = {handleBodyChange} onAuthorChange = {handleAuthorChange} onClose={handleHideModal}/> 
+        <NewPost onClose={handleHideModal} handleAddPost = {handleAddPost}/> 
       </Modal>
     }
       <ul className = {styles.posts}>
-        <Post author={enteredAuthor} body={enteredBody} />
-        <Post author="Amirkasra" body="This is his first post" />
+      {
+        posts.length > 0 &&
+          posts.map(post => 
+            <Post key={post.body} author = {post.author} body={post.body} /> ) 
+        }
       </ul>
+      {
+        posts.length === 0 &&             <div style={{textAlign: 'center', color: 'white'}} >
+        <h2>There are no posts yet</h2>
+        <p>Start Adding some!</p>
+      </div>
+      }
     </>
   )
 }
